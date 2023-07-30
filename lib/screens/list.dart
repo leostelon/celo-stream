@@ -5,7 +5,6 @@ import 'package:fantom/api/tokens.dart';
 import 'package:fantom/themes.dart';
 import 'package:fantom/utils/token.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:random_avatar/random_avatar.dart';
@@ -29,19 +28,22 @@ class _ListScreenState extends State<ListScreen> {
       "name": "fDAIx",
       "address": "0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f",
       "balance": 0,
-      "currentFlowRate": 0
+      "currentFlowRate": 0,
+      "image": "assets/celo_logo.png",
     },
     {
       "name": "fUSDCx",
       "address": "0x42bb40bf79730451b11f6de1cba222f17b87afd7",
       "balance": 0,
-      "currentFlowRate": 0
+      "currentFlowRate": 0,
+      "image": "assets/celo_logo.png",
     },
     {
       "name": "MATICx",
       "address": "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
       "balance": 0,
-      "currentFlowRate": 0
+      "currentFlowRate": 0,
+      "image": "assets/cusd.png",
     }
   ];
 
@@ -174,80 +176,143 @@ class _ListScreenState extends State<ListScreen> {
                         )
                       ],
                     ),
-                    // Balance Tile
+                    const SizedBox(height: 24),
+                    // Tokens
+                    const Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            "Tokens",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     Container(
-                      margin: const EdgeInsets.only(top: 32),
-                      height: (MediaQuery.of(context).size.height / 100) * 22.5,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(32),
-                        color: primaryColor,
-                      ),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
+                      height: 110,
+                      alignment: Alignment.centerLeft,
+                      margin: const EdgeInsets.only(top: 8),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: addressList.length,
+                        itemBuilder: (_, ind) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: GestureDetector(
+                              onTap: () {},
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    "Your Balance",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white70),
+                                  CircleAvatar(
+                                    radius: 40,
+                                    backgroundColor: Colors.grey.shade800,
+                                    backgroundImage:
+                                        AssetImage(addressList[ind]['image']),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    "$balance FRX",
-                                    style: const TextStyle(
-                                      fontSize: 38,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                    addressList[ind]['name'],
+                                    style:
+                                        const TextStyle(color: Colors.white54),
                                   )
                                 ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 16),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Image.asset(
-                                    "assets/frax-logo.png",
-                                    height: 28,
-                                    color: Colors.white,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Clipboard.setData(
-                                          ClipboardData(text: address));
-                                      Get.snackbar("Copied!",
-                                          "Address copied to clipboard.",
-                                          snackPosition: SnackPosition.BOTTOM,
-                                          backgroundColor: primaryColor);
-                                    },
-                                    child: Text(
-                                      "${address.substring(0, 6)} **** **** ${address.substring(38, 42)}",
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ]),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(height: 24),
-                    // Actions
+                    // Balances
+                    const Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            "Balances",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 12),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(32),
+                        ),
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: addressList.length,
+                        itemBuilder: (_, ind) {
+                          return Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 48, 48, 48),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  child: Center(
+                                    child: ownAddress(addressList[ind]['to'])
+                                        ? RotatedBox(
+                                            quarterTurns: 2,
+                                            child: Icon(
+                                                Icons.arrow_outward_sharp,
+                                                color: Colors.green.shade400))
+                                        : Icon(Icons.arrow_outward_sharp,
+                                            color: Colors.red.shade400),
+                                  ),
+                                ),
+                                title: Text(
+                                  "${addressList[ind]['name']}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                                trailing: AnimatedFlipCounter(
+                                  duration: const Duration(seconds: 1),
+                                  value: addressList[ind]['balance'],
+                                  fractionDigits: 9,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    // Streaming Tokens
+                    const Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            "Streaming Tokens",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.only(top: 12),
-                        padding: const EdgeInsets.only(top: 10),
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.vertical(
                             top: Radius.circular(32),
@@ -260,7 +325,7 @@ class _ListScreenState extends State<ListScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("You haven't made any transactions📥",
+                                    Text("You have zero streaming services📥",
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                   ],

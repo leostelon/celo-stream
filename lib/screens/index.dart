@@ -1,4 +1,3 @@
-import 'package:fantom/screens/erc20.dart';
 import 'package:fantom/screens/list.dart';
 import 'package:fantom/screens/transactions.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,6 @@ class _IndexScreenState extends State<IndexScreen> {
   int index = 0;
   List<Widget> screens = const [
     ListScreen(),
-    ERC20(),
     // ERC721(),
     TransactionsScreen(),
   ];
@@ -56,14 +54,6 @@ class _IndexScreenState extends State<IndexScreen> {
               label: 'Home',
               icon: Icon(
                 index == 0 ? Icons.home : Icons.home_outlined,
-              ),
-            ),
-            BottomNavigationBarItem(
-              label: 'ERC20',
-              icon: Icon(
-                index == 1
-                    ? Icons.monetization_on
-                    : Icons.monetization_on_outlined,
               ),
             ),
             // BottomNavigationBarItem(
