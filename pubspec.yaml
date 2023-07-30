@@ -1,0 +1,58 @@
+name: fantom
+description: A new Flutter project.
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.5 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  get: ^4.6.5
+  web3dart: ^2.6.1
+  bip39: ^1.0.6
+  ed25519_hd_key: ^2.2.0
+  hex: ^0.2.0
+  get_storage: ^2.1.1
+  http: ^0.13.6
+  random_avatar: ^0.0.8
+  qr_flutter: ^4.1.0
+  qr_code_scanner: ^1.0.1
+  url_launcher: ^6.1.11
+  flutter_launcher_icons: ^0.13.1
+  web_socket_channel: ^2.4.0
+  animated_flip_counter: ^0.2.6
+
+flutter_icons:
+  image_path: "icon/icon.png"
+  android: true
+  ios: true
+  # optionally, as transparency is not allowed on app store
+  # remove_alpha_ios: true
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - lib/utils/abi.json
+  #   - images/a_dot_ham.jpeg
+
+  fonts:
+    - family: SplineSansMono
+      fonts:
+        - asset: fonts/SplineSansMono-Bold.ttf
+        - asset: fonts/SplineSansMono-Light.ttf
+        - asset: fonts/SplineSansMono-Medium.ttf
+        - asset: fonts/SplineSansMono-Regular.ttf
+        - asset: fonts/SplineSansMono-SemiBold.ttf
