@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:fantom/api/tokens.dart';
+import 'package:fantom/components/token_dialog.dart';
 import 'package:fantom/themes.dart';
 import 'package:fantom/utils/token.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +89,7 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> gT() async {
-    List b = await getTokens();
+    List b = await getTokens(address);
     if (!mounted) return;
 
     for (var i = 0; i < b.length; i++) {
@@ -105,8 +106,8 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> gST() async {
-    List a = await getRecieverStreamingTokens();
-    List b = await getSenderStreamingTokens();
+    List a = await getRecieverStreamingTokens(address);
+    List b = await getSenderStreamingTokens(address);
     a = a.map<dynamic>((e) {
       e['currentFlowRate'] = '-${e['currentFlowRate']}';
       return e;
@@ -134,8 +135,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future gB() async {
     for (var i = 0; i < addressList.length; i++) {
-      double b = await getBalance("0x4977f6e179901109b3075aedb9bfa08fd8d9ea8f",
-          addressList[i]['address']);
+      double b = await getBalance(address, addressList[i]['address']);
       setState(() {
         addressList[i]['balance'] = b;
       });
@@ -241,7 +241,20 @@ class _ListScreenState extends State<ListScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(right: 16.0),
                             child: GestureDetector(
-                              onTap: () {},
+                              onTap: () async {
+                                await showModalBottomSheet(
+                                    isScrollControlled: true,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(20)),
+                                    ),
+                                    context: context,
+                                    builder: (_) {
+                                      return TokenDialog(
+                                        token: addressList[ind],
+                                      );
+                                    });
+                              },
                               child: Column(
                                 children: [
                                   CircleAvatar(

@@ -33,12 +33,13 @@ class _RecieveScreenState extends State<RecieveScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
-                "Scan using Fraxpay App",
+                "Scan using Celo Stream",
                 style: TextStyle(
                   color: Colors.black87,
                   fontWeight: FontWeight.w500,
                   fontSize: 24,
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               QrImageView(

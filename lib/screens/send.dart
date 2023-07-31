@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:fantom/components/button.dart';
 import 'package:fantom/components/select_address_modal.dart';
 import 'package:fantom/themes.dart';
+import 'package:fantom/utils/token.dart';
 import 'package:fantom/utils/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,12 +26,14 @@ class _SendScreenState extends State<SendScreen> {
   String balance = "0";
   String frxBalance = "0";
   late String? address;
+  late Map token;
 
   void gFRXB() async {
-    // String b = await getBalance(GetStorage().read("address"));
-    // setState(() {
-    //   frxBalance = b;
-    // });
+    String a = GetStorage().read("address");
+    double b = await getBalance(a, token['address']);
+    setState(() {
+      frxBalance = b.toStringAsFixed(4);
+    });
   }
 
   void gB() async {
@@ -40,30 +45,38 @@ class _SendScreenState extends State<SendScreen> {
   }
 
   void sc() async {
-    setState(() {
-      loading = true;
-    });
-    // await sendToken(
-    //     address!,
-    //     BigInt.from(double.parse(controller.text.replaceAll(" FRX", "")) *
-    //         (pow(10, 18))));
-    // setState(() {
-    //   loading = false;
-    // });
-    Get.offNamed("/index");
-    await Future.delayed(const Duration(seconds: 1));
-    Get.snackbar(
-        "Successfully sent.", "${controller.text} has been sent successfully.",
-        snackPosition: SnackPosition.BOTTOM, backgroundColor: primaryColor);
+    if (address == null) {
+      Get.snackbar("Enter Address", "Please select and add address",
+          backgroundColor: primaryColor, snackPosition: SnackPosition.BOTTOM);
+    } else {
+      setState(() {
+        loading = true;
+      });
+      await sendToken(
+          address!,
+          token['address'],
+          BigInt.from(double.parse(
+                  controller.text.replaceAll(" ${token['symbol']}", "")) *
+              (pow(10, 18))));
+      setState(() {
+        loading = false;
+      });
+      Get.offNamed("/index");
+      await Future.delayed(const Duration(seconds: 1));
+      Get.snackbar("Successfully sent.",
+          "${controller.text} has been sent successfully.",
+          snackPosition: SnackPosition.BOTTOM, backgroundColor: primaryColor);
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    controller = TextEditingController(text: "0 FRX");
+    token = argumentData;
+    controller = TextEditingController(text: "0 ${token['symbol']}");
     gB();
     gFRXB();
-    address = argumentData;
+    address = null;
   }
 
   @override
@@ -115,9 +128,10 @@ class _SendScreenState extends State<SendScreen> {
                     controller: controller,
                     onChanged: (v) {
                       controller.value = controller.value.copyWith(
-                        text: "${controller.text} FRX",
+                        text: "${controller.text} ${token['symbol']}",
                         selection: TextSelection.collapsed(
-                            offset: "${controller.text} FRX".length - 4),
+                          offset: "${controller.text} FTX".length - 4,
+                        ),
                       );
                     },
                     style: const TextStyle(
@@ -145,14 +159,14 @@ class _SendScreenState extends State<SendScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              "Your balance: $frxBalance FRX",
+              "Your balance: $frxBalance ${token['symbol']}",
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: Colors.grey.shade400,
               ),
             ),
             Text(
-              "Matic balance: $balance MAT",
+              "Celo balance: $balance CELO",
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: Colors.grey.shade400,

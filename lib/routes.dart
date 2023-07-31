@@ -2,7 +2,6 @@ import 'package:fantom/screens/create_wallet.dart';
 import 'package:fantom/screens/home.dart';
 import 'package:fantom/screens/import_wallet.dart';
 import 'package:fantom/screens/index.dart';
-import 'package:fantom/screens/list.dart';
 import 'package:fantom/screens/qr_scanner.dart';
 import 'package:fantom/screens/recieve.dart';
 import 'package:fantom/screens/send.dart';

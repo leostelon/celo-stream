@@ -64,6 +64,6 @@ sendToken(String address, String contractAddress, value) async {
         contract: contract,
         function: fn,
         parameters: [EthereumAddress.fromHex(address), value]),
-    chainId: 137,
+    chainId: 80001,
   );
 }
