@@ -30,7 +30,8 @@ class _StreamModalState extends State<StreamModal> {
               setState(() {
                 loading = true;
               });
-              await cancelStream(widget.token['receiver'], widget.token['id']);
+              await cancelStream(widget.token['receiver'],
+                  widget.token['sender'], widget.token['id']);
               if (context.mounted) Navigator.of(context).pop();
               await Future.delayed(const Duration(seconds: 1));
               Get.snackbar("Successfully canceled stream.",

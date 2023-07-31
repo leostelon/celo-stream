@@ -58,11 +58,10 @@ createStream(num flowRate, String receiver, String contractAddress) async {
   }
 }
 
-cancelStream(String receiver, String contractAddress) async {
+cancelStream(String receiver, String sender, String contractAddress) async {
   try {
     List<int> list = '0x'.codeUnits;
     Uint8List bytes = Uint8List.fromList(list);
-    String address = GetStorage().read("address");
 
     final contract =
         await getContract("0xcfA132E353cB4E398080B9700609bb008eceB125");
@@ -75,7 +74,7 @@ cancelStream(String receiver, String contractAddress) async {
       credentials,
       Transaction.callContract(contract: contract, function: fn, parameters: [
         EthereumAddress.fromHex(contractAddress),
-        EthereumAddress.fromHex(address),
+        EthereumAddress.fromHex(sender),
         EthereumAddress.fromHex(receiver),
         bytes,
       ]),

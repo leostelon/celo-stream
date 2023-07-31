@@ -125,6 +125,7 @@ class _ListScreenState extends State<ListScreen> {
               .getValueInUnit(EtherUnit.ether);
       token['image'] = getImage(token['id']);
       token['receiver'] = b[i]['receiver']['id'];
+      token['sender'] = b[i]['sender']['id'];
       final bT =
           addressList.firstWhereOrNull((e) => token['id'] == e['address']);
       if (bT == null) return;
