@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:fantom/api/tokens.dart';
 import 'package:fantom/components/balance_modal_send.dart';
+import 'package:fantom/components/stream_modal.dart';
 import 'package:fantom/components/token_dialog.dart';
 import 'package:fantom/themes.dart';
 import 'package:fantom/utils/token.dart';
@@ -116,12 +117,14 @@ class _ListScreenState extends State<ListScreen> {
     b.addAll(a);
     if (!mounted) return;
 
+    streamingTokens = [];
     for (var i = 0; i < b.length; i++) {
       final token = b[i]['token'];
       token['currentFlowRate'] =
           EtherAmount.inWei(BigInt.from(double.parse(b[i]['currentFlowRate'])))
               .getValueInUnit(EtherUnit.ether);
       token['image'] = getImage(token['id']);
+      token['receiver'] = b[i]['receiver']['id'];
       final bT =
           addressList.firstWhereOrNull((e) => token['id'] == e['address']);
       if (bT == null) return;
@@ -304,6 +307,7 @@ class _ListScreenState extends State<ListScreen> {
                       child: ListView.builder(
                         shrinkWrap: true,
                         itemCount: addressList.length,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (_, ind) {
                           return GestureDetector(
                             onTap: () async {
@@ -315,7 +319,8 @@ class _ListScreenState extends State<ListScreen> {
                                   ),
                                   context: context,
                                   builder: (_) {
-                                    return BalanceModalSend(token: addressList[ind]);
+                                    return BalanceModalSend(
+                                        token: addressList[ind]);
                                   });
                             },
                             child: Padding(
@@ -416,62 +421,78 @@ class _ListScreenState extends State<ListScreen> {
                                 shrinkWrap: true,
                                 itemCount: streamingTokens.length,
                                 itemBuilder: (_, ind) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(4),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: const Color.fromARGB(
-                                            255, 48, 48, 48),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundImage: AssetImage(
-                                              streamingTokens[ind]['image']),
-                                          backgroundColor: Colors.white,
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      await showModalBottomSheet(
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.vertical(
+                                                top: Radius.circular(20)),
+                                          ),
+                                          context: context,
+                                          builder: (_) {
+                                            return StreamModal(
+                                                token: streamingTokens[ind]);
+                                          });
+                                      gB();
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromARGB(
+                                              255, 48, 48, 48),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                         ),
-                                        title: Text(
-                                          "${streamingTokens[ind]['symbol']}",
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white),
-                                        ),
-                                        subtitle: Text(
-                                          "${streamingTokens[ind]['name']}",
-                                          style: const TextStyle(
-                                              color: Colors.white),
-                                        ),
-                                        trailing: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            AnimatedFlipCounter(
-                                              duration:
-                                                  const Duration(seconds: 1),
-                                              value: streamingTokens[ind]
-                                                  ['balance'],
-                                              fractionDigits: 9,
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              (streamingTokens[ind][
-                                                              'currentFlowRate'] *
-                                                          31 *
-                                                          24 *
-                                                          60 *
-                                                          60)
-                                                      .toStringAsFixed(2) +
-                                                  "/mo",
-                                              style: TextStyle(
-                                                  color: streamingTokens[ind][
-                                                              'currentFlowRate'] <
-                                                          0
-                                                      ? Colors.red
-                                                      : Colors.green),
-                                            ),
-                                          ],
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundImage: AssetImage(
+                                                streamingTokens[ind]['image']),
+                                            backgroundColor: Colors.white,
+                                          ),
+                                          title: Text(
+                                            "${streamingTokens[ind]['symbol']}",
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
+                                          subtitle: Text(
+                                            "${streamingTokens[ind]['name']}",
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          ),
+                                          trailing: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              AnimatedFlipCounter(
+                                                duration:
+                                                    const Duration(seconds: 1),
+                                                value: streamingTokens[ind]
+                                                    ['balance'],
+                                                fractionDigits: 9,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                (streamingTokens[ind][
+                                                                'currentFlowRate'] *
+                                                            31 *
+                                                            24 *
+                                                            60 *
+                                                            60)
+                                                        .toStringAsFixed(2) +
+                                                    "/mo",
+                                                style: TextStyle(
+                                                    color: streamingTokens[ind][
+                                                                'currentFlowRate'] <
+                                                            0
+                                                        ? Colors.red
+                                                        : Colors.green),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),

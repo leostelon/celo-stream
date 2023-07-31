@@ -18,7 +18,7 @@ class BalanceModalSend extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () async {
-              String add = await showModalBottomSheet(
+              await showModalBottomSheet(
                   isScrollControlled: true,
                   shape: const RoundedRectangleBorder(
                     borderRadius:
@@ -28,7 +28,6 @@ class BalanceModalSend extends StatelessWidget {
                   builder: (_) {
                     return BalanceModal(token: token);
                   });
-              print(add);
             },
             child: Container(
               decoration: BoxDecoration(

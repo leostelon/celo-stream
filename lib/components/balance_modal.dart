@@ -30,7 +30,8 @@ class _BalanceModalState extends State<BalanceModal> {
     setState(() {
       loading = false;
     });
-    Get.offNamed("/index");
+    if (context.mounted) Navigator.of(context).pop();
+    if (context.mounted) Navigator.of(context).pop();
     await Future.delayed(const Duration(seconds: 1));
     Get.snackbar(
         "Successfully created stream.", "It might take some time to reflect⏱️",
@@ -81,7 +82,8 @@ class _BalanceModalState extends State<BalanceModal> {
                       border: InputBorder.none,
                       hintText: 'Wallet Address',
                     ),
-                    style: const TextStyle(decoration: TextDecoration.none),
+                    style: const TextStyle(
+                        decoration: TextDecoration.none, color: Colors.white),
                   ),
                   const SizedBox(height: 12),
                   // Flow Rate
@@ -104,7 +106,8 @@ class _BalanceModalState extends State<BalanceModal> {
                       border: InputBorder.none,
                       hintText: widget.token['symbol'],
                     ),
-                    style: const TextStyle(decoration: TextDecoration.none),
+                    style: const TextStyle(
+                        decoration: TextDecoration.none, color: Colors.white),
                   ),
                   const SizedBox(height: 8),
                   Row(

@@ -42,7 +42,7 @@ createStream(num flowRate, String receiver, String contractAddress) async {
 
     final credentials = EthPrivateKey.fromHex(GetStorage().read("privateKey"));
 
-    final txid = await client.sendTransaction(
+    await client.sendTransaction(
       credentials,
       Transaction.callContract(contract: contract, function: fn, parameters: [
         EthereumAddress.fromHex(contractAddress),
@@ -53,16 +53,16 @@ createStream(num flowRate, String receiver, String contractAddress) async {
       ]),
       chainId: 80001,
     );
-    print(txid);
   } catch (e) {
-    print(e);
+    // print(e);
   }
 }
 
-cancelStream() async {
+cancelStream(String receiver, String contractAddress) async {
   try {
     List<int> list = '0x'.codeUnits;
     Uint8List bytes = Uint8List.fromList(list);
+    String address = GetStorage().read("address");
 
     final contract =
         await getContract("0xcfA132E353cB4E398080B9700609bb008eceB125");
@@ -71,19 +71,18 @@ cancelStream() async {
 
     final credentials = EthPrivateKey.fromHex(GetStorage().read("privateKey"));
 
-    final txid = await client.sendTransaction(
+    await client.sendTransaction(
       credentials,
       Transaction.callContract(contract: contract, function: fn, parameters: [
-        EthereumAddress.fromHex("0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f"),
-        EthereumAddress.fromHex("0x4977f6e179901109b3075aedb9bfa08fd8d9ea8f"),
-        EthereumAddress.fromHex("0xda2ee9b29a77977b89b6c0b0c1aeb8d9d9372c1a"),
+        EthereumAddress.fromHex(contractAddress),
+        EthereumAddress.fromHex(address),
+        EthereumAddress.fromHex(receiver),
         bytes,
       ]),
       chainId: 80001,
     );
-    print(txid);
   } catch (e) {
-    print(e);
+    // print(e);
   }
 }
 
