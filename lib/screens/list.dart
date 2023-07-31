@@ -20,26 +20,30 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
   String address = GetStorage().read("address");
   String balance = "0";
-  List tokens = [];
   late Timer timer;
+  late Timer streamTimer;
 
+  List<Map> streamingTokens = [];
   List<Map> addressList = [
     {
-      "name": "fDAIx",
-      "address": "0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f",
+      "name": "DAI Stable",
+      "symbol": "fDAIx",
+      "address": "0x5d8b4c2554aeb7e86f387b4d6c00ac33499ed01f",
       "balance": 0,
       "currentFlowRate": 0,
       "image": "assets/celo_logo.png",
     },
     {
-      "name": "fUSDCx",
+      "name": "USDC",
+      "symbol": "fUSDCx",
       "address": "0x42bb40bf79730451b11f6de1cba222f17b87afd7",
       "balance": 0,
       "currentFlowRate": 0,
       "image": "assets/celo_logo.png",
     },
     {
-      "name": "MATICx",
+      "name": "MATIC",
+      "symbol": "MATICx",
       "address": "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
       "balance": 0,
       "currentFlowRate": 0,
@@ -47,13 +51,36 @@ class _ListScreenState extends State<ListScreen> {
     }
   ];
 
-  void startTimer() {
+  String getImage(String address) {
+    switch (address) {
+      case "0x42bb40bf79730451b11f6de1cba222f17b87afd7":
+        return "assets/cusd.png";
+      default:
+        return "assets/celo_logo.png";
+    }
+  }
+
+  void startTokenTimer() {
     timer = Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) async {
         for (var i = 0; i < addressList.length; i++) {
           setState(() {
-            addressList[i]['balance'] -= addressList[i]['currentFlowRate'];
+            addressList[i]['balance'] += addressList[i]['currentFlowRate'];
+          });
+        }
+      },
+    );
+  }
+
+  void startStreamTimer() {
+    streamTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer timer) async {
+        for (var i = 0; i < streamingTokens.length; i++) {
+          setState(() {
+            streamingTokens[i]['balance'] +=
+                streamingTokens[i]['currentFlowRate'];
           });
         }
       },
@@ -70,43 +97,51 @@ class _ListScreenState extends State<ListScreen> {
             .firstWhereOrNull((e) => e['address'] == b[i]['token']['id']);
         if (token == null) return;
         token['currentFlowRate'] = EtherAmount.inWei(
-                BigInt.from(double.parse(b[i]['currentFlowRate'])))
+                BigInt.from(double.parse(b[i]['totalNetFlowRate'])))
             .getValueInUnit(EtherUnit.ether);
       });
-      // final secondsElapsed = (DateTime.now().millisecondsSinceEpoch / 1000 -
-      //     double.parse(b[i]['createdAtTimestamp']));
-      // final ethPerSecond =
-      //     EtherAmount.inWei(BigInt.from(int.parse(b[i]['currentFlowRate'])))
-      //         .getValueInUnit(EtherUnit.ether);
-      // final totalEthSinceCreated = ethPerSecond * secondsElapsed;
-      // setState(() {
-      //   final token = addressList
-      //       .firstWhereOrNull((e) => e['address'] == b[i]['token']['id']);
-      //   if (token == null) return;
-      //   token['balance'] -= totalEthSinceCreated;
-      //   token['currentFlowRate'] = EtherAmount.inWei(
-      //           BigInt.from(double.parse(b[i]['currentFlowRate'])))
-      //       .getValueInUnit(EtherUnit.ether);
-      // });
-      // print(EtherAmount.inWei(BigInt.from(int.parse(b[i]['currentFlowRate'])))
-      //         .getValueInUnit(EtherUnit.ether) *
-      //     31 *
-      //     24 *
-      //     60 *
-      //     60);
     }
-    startTimer();
+    startTokenTimer();
+  }
+
+  Future<void> gST() async {
+    List a = await getRecieverStreamingTokens();
+    List b = await getSenderStreamingTokens();
+    a = a.map<dynamic>((e) {
+      e['currentFlowRate'] = '-${e['currentFlowRate']}';
+      return e;
+    }).toList();
+    b.addAll(a);
+    if (!mounted) return;
+
+    for (var i = 0; i < b.length; i++) {
+      final token = b[i]['token'];
+      token['currentFlowRate'] =
+          EtherAmount.inWei(BigInt.from(double.parse(b[i]['currentFlowRate'])))
+              .getValueInUnit(EtherUnit.ether);
+      token['image'] = getImage(token['id']);
+      final bT =
+          addressList.firstWhereOrNull((e) => token['id'] == e['address']);
+      if (bT == null) return;
+      token['balance'] = bT['balance'];
+
+      setState(() {
+        streamingTokens.add(token);
+      });
+    }
+    startStreamTimer();
   }
 
   Future gB() async {
     for (var i = 0; i < addressList.length; i++) {
-      double b = await getBalance("0x3b18dCa02FA6945aCBbE2732D8942781B410E0F9",
+      double b = await getBalance("0x4977f6e179901109b3075aedb9bfa08fd8d9ea8f",
           addressList[i]['address']);
       setState(() {
         addressList[i]['balance'] = b;
       });
     }
     gT();
+    gST();
   }
 
   bool ownAddress(add) {
@@ -122,6 +157,7 @@ class _ListScreenState extends State<ListScreen> {
   @override
   void dispose() {
     timer.cancel();
+    streamTimer.cancel();
     super.dispose();
   }
 
@@ -264,28 +300,45 @@ class _ListScreenState extends State<ListScreen> {
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
+                                  backgroundImage:
+                                      AssetImage(addressList[ind]['image']),
                                   backgroundColor: Colors.white,
-                                  child: Center(
-                                    child: ownAddress(addressList[ind]['to'])
-                                        ? RotatedBox(
-                                            quarterTurns: 2,
-                                            child: Icon(
-                                                Icons.arrow_outward_sharp,
-                                                color: Colors.green.shade400))
-                                        : Icon(Icons.arrow_outward_sharp,
-                                            color: Colors.red.shade400),
-                                  ),
                                 ),
                                 title: Text(
-                                  "${addressList[ind]['name']}",
+                                  "${addressList[ind]['symbol']}",
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
-                                trailing: AnimatedFlipCounter(
-                                  duration: const Duration(seconds: 1),
-                                  value: addressList[ind]['balance'],
-                                  fractionDigits: 9,
+                                subtitle: Text(
+                                  "${addressList[ind]['name']}",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    AnimatedFlipCounter(
+                                      duration: const Duration(seconds: 1),
+                                      value: addressList[ind]['balance'],
+                                      fractionDigits: 9,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                        (addressList[ind]['currentFlowRate'] *
+                                                    31 *
+                                                    24 *
+                                                    60 *
+                                                    60)
+                                                .toStringAsFixed(2) +
+                                            "/mo",
+                                        style: TextStyle(
+                                            color: addressList[ind]
+                                                        ['currentFlowRate'] <
+                                                    0
+                                                ? Colors.red
+                                                : Colors.green)),
+                                  ],
                                 ),
                               ),
                             ),
@@ -318,7 +371,7 @@ class _ListScreenState extends State<ListScreen> {
                             top: Radius.circular(32),
                           ),
                         ),
-                        child: addressList.isEmpty
+                        child: streamingTokens.isEmpty
                             ? const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 8.0),
                                 child: Row(
@@ -333,7 +386,7 @@ class _ListScreenState extends State<ListScreen> {
                               )
                             : ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: addressList.length,
+                                itemCount: streamingTokens.length,
                                 itemBuilder: (_, ind) {
                                   return Padding(
                                     padding: const EdgeInsets.all(4),
@@ -345,32 +398,52 @@ class _ListScreenState extends State<ListScreen> {
                                       ),
                                       child: ListTile(
                                         leading: CircleAvatar(
+                                          backgroundImage: AssetImage(
+                                              streamingTokens[ind]['image']),
                                           backgroundColor: Colors.white,
-                                          child: Center(
-                                            child: ownAddress(
-                                                    addressList[ind]['to'])
-                                                ? RotatedBox(
-                                                    quarterTurns: 2,
-                                                    child: Icon(
-                                                        Icons
-                                                            .arrow_outward_sharp,
-                                                        color: Colors
-                                                            .green.shade400))
-                                                : Icon(
-                                                    Icons.arrow_outward_sharp,
-                                                    color: Colors.red.shade400),
-                                          ),
                                         ),
                                         title: Text(
-                                          "${addressList[ind]['name']}",
+                                          "${streamingTokens[ind]['symbol']}",
                                           style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white),
                                         ),
-                                        trailing: AnimatedFlipCounter(
-                                          duration: const Duration(seconds: 1),
-                                          value: addressList[ind]['balance'],
-                                          fractionDigits: 9,
+                                        subtitle: Text(
+                                          "${streamingTokens[ind]['name']}",
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                        ),
+                                        trailing: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            AnimatedFlipCounter(
+                                              duration:
+                                                  const Duration(seconds: 1),
+                                              value: streamingTokens[ind]
+                                                  ['balance'],
+                                              fractionDigits: 9,
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              (streamingTokens[ind][
+                                                              'currentFlowRate'] *
+                                                          31 *
+                                                          24 *
+                                                          60 *
+                                                          60)
+                                                      .toStringAsFixed(2) +
+                                                  "/mo",
+                                              style: TextStyle(
+                                                  color: streamingTokens[ind][
+                                                              'currentFlowRate'] <
+                                                          0
+                                                      ? Colors.red
+                                                      : Colors.green),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
