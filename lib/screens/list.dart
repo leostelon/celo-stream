@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:fantom/api/tokens.dart';
+import 'package:fantom/components/balance_modal_send.dart';
 import 'package:fantom/components/token_dialog.dart';
 import 'package:fantom/themes.dart';
 import 'package:fantom/utils/token.dart';
@@ -304,54 +305,68 @@ class _ListScreenState extends State<ListScreen> {
                         shrinkWrap: true,
                         itemCount: addressList.length,
                         itemBuilder: (_, ind) {
-                          return Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 48, 48, 48),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage(addressList[ind]['image']),
-                                  backgroundColor: Colors.white,
+                          return GestureDetector(
+                            onTap: () async {
+                              await showModalBottomSheet(
+                                  isScrollControlled: true,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20)),
+                                  ),
+                                  context: context,
+                                  builder: (_) {
+                                    return BalanceModalSend(token: addressList[ind]);
+                                  });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(255, 48, 48, 48),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                title: Text(
-                                  "${addressList[ind]['symbol']}",
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
-                                subtitle: Text(
-                                  "${addressList[ind]['name']}",
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                trailing: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    AnimatedFlipCounter(
-                                      duration: const Duration(seconds: 1),
-                                      value: addressList[ind]['balance'],
-                                      fractionDigits: 9,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                        (addressList[ind]['currentFlowRate'] *
-                                                    31 *
-                                                    24 *
-                                                    60 *
-                                                    60)
-                                                .toStringAsFixed(2) +
-                                            "/mo",
-                                        style: TextStyle(
-                                            color: addressList[ind]
-                                                        ['currentFlowRate'] <
-                                                    0
-                                                ? Colors.red
-                                                : Colors.green)),
-                                  ],
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage:
+                                        AssetImage(addressList[ind]['image']),
+                                    backgroundColor: Colors.white,
+                                  ),
+                                  title: Text(
+                                    "${addressList[ind]['symbol']}",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                  subtitle: Text(
+                                    "${addressList[ind]['name']}",
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      AnimatedFlipCounter(
+                                        duration: const Duration(seconds: 1),
+                                        value: addressList[ind]['balance'],
+                                        fractionDigits: 9,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                          (addressList[ind]['currentFlowRate'] *
+                                                      31 *
+                                                      24 *
+                                                      60 *
+                                                      60)
+                                                  .toStringAsFixed(2) +
+                                              "/mo",
+                                          style: TextStyle(
+                                              color: addressList[ind]
+                                                          ['currentFlowRate'] <
+                                                      0
+                                                  ? Colors.red
+                                                  : Colors.green)),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

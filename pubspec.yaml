@@ -46,6 +46,7 @@ flutter:
   assets:
     - assets/
     - lib/utils/abi.json
+    - lib/utils/stream.json
   #   - images/a_dot_ham.jpeg
 
   fonts:
