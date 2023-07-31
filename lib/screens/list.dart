@@ -29,29 +29,21 @@ class _ListScreenState extends State<ListScreen> {
   List<Map> streamingTokens = [];
   List<Map> addressList = [
     {
-      "name": "DAI Stable",
-      "symbol": "fDAIx",
-      "address": "0x5d8b4c2554aeb7e86f387b4d6c00ac33499ed01f",
+      "name": "Super Celo",
+      "symbol": "CELOx",
+      "address": "0x671425ae1f272bc6f79bec3ed5c4b00e9c628240",
       "balance": 0,
       "currentFlowRate": 0,
       "image": "assets/celo_logo.png",
     },
     {
-      "name": "USDC",
-      "symbol": "fUSDCx",
-      "address": "0x42bb40bf79730451b11f6de1cba222f17b87afd7",
-      "balance": 0,
-      "currentFlowRate": 0,
-      "image": "assets/celo_logo.png",
-    },
-    {
-      "name": "MATIC",
-      "symbol": "MATICx",
-      "address": "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
+      "name": "Super Dollar",
+      "symbol": "cUSDx",
+      "address": "0x3acb9a08697b6db4cd977e8ab42b6f24722e6d6e",
       "balance": 0,
       "currentFlowRate": 0,
       "image": "assets/cusd.png",
-    }
+    },
   ];
 
   String getImage(String address) {
@@ -93,6 +85,11 @@ class _ListScreenState extends State<ListScreen> {
   Future<void> gT() async {
     List b = await getTokens(address);
     if (!mounted) return;
+
+    // Zero currentFlowRate
+    for (var i = 0; i < addressList.length; i++) {
+      addressList[i]['currentFlowRate'] = 0;
+    }
 
     for (var i = 0; i < b.length; i++) {
       setState(() {

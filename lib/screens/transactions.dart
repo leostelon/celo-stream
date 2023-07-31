@@ -97,7 +97,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                             ),
                           ),
                           trailing: Text(
-                            "${EtherAmount.fromBase10String(EtherUnit.wei, transactions[ind]['value']).getValueInUnit(EtherUnit.ether).toStringAsFixed(2)} FRX",
+                            "${EtherAmount.fromBase10String(EtherUnit.wei, transactions[ind]['value']).getValueInUnit(EtherUnit.ether).toStringAsFixed(2)} CELO",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: ownAddress(transactions[ind]['to'])

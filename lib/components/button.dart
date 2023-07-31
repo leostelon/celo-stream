@@ -29,7 +29,6 @@ class Button extends StatelessWidget {
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: Colors.grey.shade200),
           ),
           child: Center(
             child: loading

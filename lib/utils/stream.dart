@@ -8,9 +8,8 @@ import 'package:web_socket_channel/io.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 const rpcUrl =
-    "https://polygon-mumbai.infura.io/v3/c731d68b09e6477fa3c86fa92380133e";
-const rpcWssUrl =
-    "wss://polygon-mumbai.infura.io/ws/v3/c731d68b09e6477fa3c86fa92380133e";
+    "https://celo-mainnet.infura.io/v3/c731d68b09e6477fa3c86fa92380133e";
+const rpcWssUrl = "wss://forno.celo.org/ws";
 
 final client = Web3Client(rpcUrl, Client(), socketConnector: () {
   return IOWebSocketChannel.connect(rpcWssUrl).cast<String>();
@@ -51,7 +50,7 @@ createStream(num flowRate, String receiver, String contractAddress) async {
         BigInt.from(flowRate * pow(10, 18) / (30 * 24 * 60 * 60)),
         bytes,
       ]),
-      chainId: 80001,
+      chainId: 42220,
     );
   } catch (e) {
     // print(e);
@@ -78,10 +77,10 @@ cancelStream(String receiver, String sender, String contractAddress) async {
         EthereumAddress.fromHex(receiver),
         bytes,
       ]),
-      chainId: 80001,
+      chainId: 42220,
     );
   } catch (e) {
-    // print(e);
+    print(e);
   }
 }
 

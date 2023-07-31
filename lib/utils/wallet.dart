@@ -6,7 +6,7 @@ import 'package:hex/hex.dart';
 
 var client = http.Client();
 var ethClient = Web3Client(
-    "https://polygon-mumbai.infura.io/v3/c731d68b09e6477fa3c86fa92380133e",
+    "https://celo-mainnet.infura.io/v3/c731d68b09e6477fa3c86fa92380133e",
     client);
 
 String generateMnemonic() {
