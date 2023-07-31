@@ -34,7 +34,7 @@ class WelcomeState extends State<Welcome> {
               ),
             ),
             Text(
-              "Fantom payments made easy⚡",
+              "Celo payments made easy⚡",
               style: TextStyle(
                 color: Colors.grey.shade700,
                 fontSize: 12,

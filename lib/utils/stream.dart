@@ -53,7 +53,7 @@ createStream(num flowRate, String receiver, String contractAddress) async {
       chainId: 42220,
     );
   } catch (e) {
-    // print(e);
+    print(e);
   }
 }
 
@@ -80,7 +80,7 @@ cancelStream(String receiver, String sender, String contractAddress) async {
       chainId: 42220,
     );
   } catch (e) {
-    print(e);
+    // print(e);
   }
 }
 
