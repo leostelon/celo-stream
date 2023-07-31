@@ -51,7 +51,7 @@ class _QrScannerState extends State<QrScanner> {
               child: (result != null)
                   ? Text(
                       'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
-                  : const Text('Scan a Fraxpay QR code'),
+                  : const Text('Scan a Stream QR code'),
             ),
           )
         ],
@@ -68,14 +68,14 @@ class _QrScannerState extends State<QrScanner> {
           scanData.code == "" ||
           !scanData.code!.contains("address")) {
         Get.snackbar(
-            "Invalid QR code.", "try scanning a QR code from Fraxpay App",
+            "Invalid QR code.", "try scanning a QR code from Stream App",
             backgroundColor: primaryColor, snackPosition: SnackPosition.BOTTOM);
       } else {
         try {
           Map data = jsonDecode(scanData.code!);
           if (data['address'].length != 42) {
             Get.snackbar(
-                "Invalid QR code.", "try scanning a QR code from Fraxpay App",
+                "Invalid QR code.", "try scanning a QR code from Stream App",
                 backgroundColor: primaryColor,
                 snackPosition: SnackPosition.BOTTOM);
           } else {
@@ -84,7 +84,7 @@ class _QrScannerState extends State<QrScanner> {
           }
         } catch (e) {
           Get.snackbar(
-              "Invalid QR code.", "try scanning a QR code from Fraxpay App",
+              "Invalid QR code.", "try scanning a QR code from Stream App",
               backgroundColor: primaryColor,
               snackPosition: SnackPosition.BOTTOM);
         }

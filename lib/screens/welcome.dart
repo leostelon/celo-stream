@@ -26,7 +26,7 @@ class WelcomeState extends State<Welcome> {
             ),
             const SizedBox(height: 40),
             const Text(
-              "Welcome to FraxPay",
+              "Welcome to Celo Stream",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
